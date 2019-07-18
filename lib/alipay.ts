@@ -350,7 +350,7 @@ class AlipaySdk {
       .then((ret: { status: number, data: string }) => {
         infoLog && infoLog('[AlipaySdk]exec response: %s', ret);
 
-        if (ret.status === 200) {
+        if ((ret.status === 200)) {
           /**
            * 示例响应格式
            * {"alipay_trade_precreate_response":
@@ -378,6 +378,15 @@ class AlipaySdk {
           }
 
           reject({ serverResult: ret, errorMessage: '[AlipaySdk]HTTP 请求错误' });
+        } else if (ret.status === 302) {
+          infoLog && infoLog('ret.status =: %s', ret.status);
+          // 302 redirect, 把新的location url 返回出去
+
+          const result = {
+            code: 302,
+            location: ret.res.headers.location
+          };
+          resolve(result);
         }
 
         reject({ serverResult: ret, errorMessage: '[AlipaySdk]HTTP 请求错误' });
