@@ -347,7 +347,7 @@ class AlipaySdk {
         timeout: config.timeout,
         headers: { 'user-agent': this.sdkVersion },
       })
-      .then((ret: { status: number, data: string }) => {
+      .then((ret: { status: number, data: string, res: any}) => {
         infoLog && infoLog('[AlipaySdk]exec response: %s', ret);
 
         if ((ret.status === 200)) {
@@ -381,10 +381,13 @@ class AlipaySdk {
         } else if (ret.status === 302) {
           infoLog && infoLog('ret.status =: %s', ret.status);
           // 302 redirect, 把新的location url 返回出去
+          const msgObj = {
+            location: ret.res.headers.location,
+          };
 
           const result = {
-            code: 302,
-            location: ret.res.headers.location
+            code: String(ret.status),
+            msg: JSON.stringify(msgObj),
           };
           resolve(result);
         }
